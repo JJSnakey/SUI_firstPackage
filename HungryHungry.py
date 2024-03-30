@@ -27,11 +27,12 @@ BLUE = (0,0,255)
 
 # Set up the player (square)
 class Player:
-    def __init__(self, x, y, size=50, speed=5):
+    def __init__(self, x, y, size=50, speed=5, score=0):
         self.x = x
         self.y = y
         self.size = size
         self.speed = speed
+        self.score = score
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
     
     def move(self, dx, dy):
@@ -47,6 +48,7 @@ class Player:
         for fish in fishes:
             if is_collision(fish, player):
                 fishes.remove(fish)
+                self.score += 1
 
 #area for fishes to spawn
 class Pond:
@@ -68,8 +70,14 @@ class Fish:
     def draw(self):
         pygame.draw.circle(window, WHITE, (self.x, self.y), self.radius)
 
+
 #===========================================================================================================================
 #game functions
+
+def display_score1(score):
+    font = pygame.font.Font(None, 36)  # Choose a font and font size
+    text = font.render("Score: " + str(score), True, WHITE)  # Render the score text
+    window.blit(text, (10, 10))  # Blit the text onto the game window at (10, 10)
 
 #determine if fish spawned in the pond
 def is_inside_pond(x, y, pond):
@@ -140,27 +148,23 @@ while running:
     if keys[pygame.K_SPACE]:
         player.crunch(fishes)   #passes 2 arguments, player and fishes
     
-    # Blit the background image onto the window
+    # Drawing------
     window.blit(background_image, (0, 0))
+    display_score1(player.score)
 
-    #draw the pond (remove later)
-    pond.draw()
-
-    # Draw the square
+    pond.draw()  #draw the pond (remove later)
     player.draw()
-
-    # Draw white circles
     for fish in fishes:
         fish.draw()
     
-    # Update the display
+    # Update the  display
     pygame.display.flip()
     
     # Cap the frame rate
     pygame.time.Clock().tick(20)
 
 #===========================================================================================================================
-#game enda
+#game end
 
     # Check if all fishes are eaten
     if len(fishes) == 0:
