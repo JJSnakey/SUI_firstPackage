@@ -47,15 +47,15 @@ class Player:
     def draw(self):
         window.blit(self.image, self.rect)
 
-    def crunch(self, fishes):
+    def crunch(fishes, self):
         for fish in fishes:
-            if is_collision(fish, player):
+            if is_collision(fish, self):
                 fishes.remove(fish)
                 self.score += 1
 
 #area for fishes to spawn
 class Pond:
-    def __init__(self, x, y, radius=350):
+    def __init__(self, x, y, radius = 350):
         self.x = x
         self.y = y
         self.radius = radius
@@ -95,10 +95,10 @@ class Fish:
 #===========================================================================================================================
 #game functions
 
-def display_score1(score):
+def display_score(score, posX, posY):
     font = pygame.font.Font(None, 36)  # Choose a font and font size
     text = font.render("Score: " + str(score), True, WHITE)  # Render the score text
-    window.blit(text, (10, 10))  # Blit the text onto the game window at (10, 10)
+    window.blit(text, (posX, posY))  # Blit the text onto the game window at posX,posY
 
 #determine if fish spawned in the pond      //used for spawn
 def is_inside_pond(x, y, pond):
@@ -128,8 +128,9 @@ def is_collision(obj1, obj2):               #obj1 typically fish, obj2 typicall 
 #===========================================================================================================================
 #initialization
 
-# Create player
-player = Player(WIDTH // 2 - 25, HEIGHT // 2 - 25)
+# Create players
+player = Player(WIDTH // 2 - 125, HEIGHT // 2 - 25)
+player2 = Player(WIDTH // 2 + 75, HEIGHT // 2 - 25)
 
 #Create play zone (pond)
 pond = Pond(700, 400)       #hardcoded wtih radius 350, at location 700,400 (the center)
@@ -158,23 +159,38 @@ while running:
     
     # Handle key presses
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] | keys[pygame.K_a]:
+    #player
+    if keys[pygame.K_a]:
         player.move(-1, 0)
-    if keys[pygame.K_RIGHT] | keys[pygame.K_d]:
+    if keys[pygame.K_d]:
         player.move(1, 0)
-    if keys[pygame.K_UP] | keys[pygame.K_w]:
+    if keys[pygame.K_w]:
         player.move(0, -1)
-    if keys[pygame.K_DOWN] | keys[pygame.K_s]:
+    if keys[pygame.K_s]:
         player.move(0, 1)
     if keys[pygame.K_SPACE]:
         player.crunch(fishes)   #passes 2 arguments, player and fishes
+
+    #player2
+    if keys[pygame.K_LEFT]:
+        player2.move(-1, 0)
+    if keys[pygame.K_RIGHT]:
+        player2.move(1, 0)
+    if keys[pygame.K_UP]:
+        player2.move(0, -1)
+    if keys[pygame.K_DOWN]:
+        player2.move(0, 1)
+    if keys[pygame.K_PERIOD]:
+        player2.crunch(fishes)   #passes 2 arguments, player2 and fishes
     
     # Drawing------
     window.blit(background_image, (0, 0))
-    display_score1(player.score)
+    display_score(player.score, 10, 10)
+    display_score(player2.score, 10, 40)
 
     pond.draw()  #draw the pond (remove later)
     player.draw()
+    player2.draw()
     for fish in fishes:
         fish.move()
         if not pond.is_inside(fish.x, fish.y):  #turn that puppy around
