@@ -79,9 +79,20 @@ def is_inside_pond(x, y, pond):
     return False
 
 #determine if colliding
-def is_collision(obj1, obj2):
-    distance = ((obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2)**0.5
-    if distance < (obj1.radius) + (obj2.size / 2):
+def is_collision(obj1, obj2):               #obj1 typically fish, obj2 typicall player
+     # Calculate the center coordinates of obj1
+    obj1_center_x = obj1.x + obj1.radius
+    obj1_center_y = obj1.y + obj1.radius
+
+    # Calculate the center coordinates of obj2
+    obj2_center_x = obj2.x + obj2.size
+    obj2_center_y = obj2.y + obj2.size
+
+    # Calculate the distance between the centers of the two objects
+    distance = ((obj1_center_x - obj2_center_x)**2 + (obj1_center_y - obj2_center_y)**2)**0.5
+
+    # Compare the distance with the sum of the radii to check for collision
+    if distance < obj1.radius + obj2.size / 2 - 20:     #adjusted for more accurate visual calc
         return True
     return False
 
@@ -132,6 +143,7 @@ while running:
     # Blit the background image onto the window
     window.blit(background_image, (0, 0))
 
+    #draw the pond (remove later)
     pond.draw()
 
     # Draw the square
@@ -146,6 +158,13 @@ while running:
     
     # Cap the frame rate
     pygame.time.Clock().tick(20)
+
+#===========================================================================================================================
+#game enda
+
+    # Check if all fishes are eaten
+    if len(fishes) == 0:
+        running = False  # End the game if no more fishes left
 
 #===========================================================================================================================
 
