@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import math
 
 #===========================================================================================================================
 #Pre game
@@ -52,21 +53,40 @@ class Player:
 
 #area for fishes to spawn
 class Pond:
-    def __init__(self, x, y):
+    def __init__(self, x, y, radius=350):
         self.x = x
         self.y = y
-        self.radius = 350
+        self.radius = radius
+        self.rect = pygame.Rect(self.x - self.radius, self.y - self.radius, 2 * self.radius, 2 * self.radius)
+
+    def is_inside(self, x, y):
+        distance = math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+        return distance <= self.radius
 
     def draw(self):
         pygame.draw.circle(window, BLUE, (self.x, self.y), self.radius, 2)
 
 #object to be eaten (eating a fish counts score, zero fish left ends the game)
 class Fish:
-    def __init__(self, x, y):
+    def __init__(self, x, y, radius=20, speed=2):
         self.x = x
         self.y = y
-        self.radius = 20
+        self.radius = radius
+        self.speed = speed
+        self.rect = pygame.Rect(self.x - self.radius, self.y - self.radius, 2 * self.radius, 2 * self.radius)
+        self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])  # Random initial direction
     
+    def move(self):
+        dx, dy = self.direction
+        self.x += dx * self.speed
+        self.y += dy * self.speed
+        self.rect.x = self.x - self.radius
+        self.rect.y = self.y - self.radius
+        
+        # Check if the fish hits the pond boundaries, change direction if it does
+        if not pond.rect.colliderect(self.rect):
+            self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
+
     def draw(self):
         pygame.draw.circle(window, WHITE, (self.x, self.y), self.radius)
 
@@ -79,7 +99,7 @@ def display_score1(score):
     text = font.render("Score: " + str(score), True, WHITE)  # Render the score text
     window.blit(text, (10, 10))  # Blit the text onto the game window at (10, 10)
 
-#determine if fish spawned in the pond
+#determine if fish spawned in the pond      //used for spawn
 def is_inside_pond(x, y, pond):
     distance = ((x - pond.x)**2 + (y - pond.y)**2)**0.5
     if distance < pond.radius:
@@ -110,10 +130,10 @@ def is_collision(obj1, obj2):               #obj1 typically fish, obj2 typicall 
 # Create player
 player = Player(WIDTH // 2 - 25, HEIGHT // 2 - 25)
 
-#create play zone
+#Create play zone (pond)
 pond = Pond(700, 400)       #hardcoded wtih radius 350, at location 700,400 (the center)
 
-# Create white circles
+# Create fishes
 fishes = []
 for i in range(50):
     x = random.randint(400, 800)
@@ -155,6 +175,9 @@ while running:
     pond.draw()  #draw the pond (remove later)
     player.draw()
     for fish in fishes:
+        fish.move()
+        if not pond.is_inside(fish.x, fish.y):  #turn that puppy around
+            fish.direction = (round(700-fish.x)/700), round((400-fish.y)/400)
         fish.draw()
     
     # Update the  display
