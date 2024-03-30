@@ -20,6 +20,7 @@ background_image = pygame.image.load("landscape.png").convert()
 # Set up colors
 WHITE =  (255,255,255)
 BLACK = (0, 0, 0)
+BLUE = (0,0,255)
 
 #===========================================================================================================================
 #game objects
@@ -42,8 +43,23 @@ class Player:
     def draw(self):
         pygame.draw.rect(window, BLACK, self.rect)
 
-#object to be eaten
-class Circle:
+    def crunch(self, fishes):
+        for fish in fishes:
+            if is_collision(fish, player):
+                fishes.remove(fish)
+
+#area for fishes to spawn
+class Pond:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.radius = 350
+
+    def draw(self):
+        pygame.draw.circle(window, BLUE, (self.x, self.y), self.radius, 2)
+
+#object to be eaten (eating a fish counts score, zero fish left ends the game)
+class Fish:
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -54,6 +70,13 @@ class Circle:
 
 #===========================================================================================================================
 #game functions
+
+#determine if fish spawned in the pond
+def is_inside_pond(x, y, pond):
+    distance = ((x - pond.x)**2 + (y - pond.y)**2)**0.5
+    if distance < pond.radius:
+        return True
+    return False
 
 #determine if colliding
 def is_collision(obj1, obj2):
@@ -68,11 +91,20 @@ def is_collision(obj1, obj2):
 # Create player
 player = Player(WIDTH // 2 - 25, HEIGHT // 2 - 25)
 
+#create play zone
+pond = Pond(700, 400)       #hardcoded wtih radius 350, at location 700,400 (the center)
+
 # Create white circles
-circles = []
-for _ in range(5):
-    circle = Circle(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50))
-    circles.append(circle)
+fishes = []
+for i in range(50):
+    x = random.randint(400, 800)
+    y = random.randint(100, 700)
+    while not is_inside_pond(x, y, pond):
+        x = random.randint(400, 800)
+        y = random.randint(100, 700)
+    fish = Fish(x, y)
+    fishes.append(fish)
+
 
 #===========================================================================================================================
 
@@ -83,12 +115,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                # Check for collision with white circles and remove them
-                for circle in circles:
-                    if is_collision(circle, player):
-                        circles.remove(circle)
     
     # Handle key presses
     keys = pygame.key.get_pressed()
@@ -100,16 +126,20 @@ while running:
         player.move(0, -1)
     if keys[pygame.K_DOWN] | keys[pygame.K_s]:
         player.move(0, 1)
+    if keys[pygame.K_SPACE]:
+        player.crunch(fishes)   #passes 2 arguments, player and fishes
     
     # Blit the background image onto the window
     window.blit(background_image, (0, 0))
+
+    pond.draw()
 
     # Draw the square
     player.draw()
 
     # Draw white circles
-    for circle in circles:
-        circle.draw()
+    for fish in fishes:
+        fish.draw()
     
     # Update the display
     pygame.display.flip()
