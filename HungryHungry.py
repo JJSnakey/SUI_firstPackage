@@ -15,8 +15,9 @@ HEIGHT = 800
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("SUI Hungry Hungry Alligators")
 
-# Load the background image
+# Load the images
 background_image = pygame.image.load("landscape.png").convert()
+player_image = pygame.image.load("arrow.png").convert_alpha()
 
 # Set up colors
 WHITE =  (255,255,255)
@@ -34,6 +35,7 @@ class Player:
         self.size = size
         self.speed = speed
         self.score = score
+        self.image = pygame.transform.scale(player_image, (size, size))  # Scale the image to match the player size
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
     
     def move(self, dx, dy):
@@ -43,7 +45,7 @@ class Player:
         self.rect.y = self.y
     
     def draw(self):
-        pygame.draw.rect(window, BLACK, self.rect)
+        window.blit(self.image, self.rect)
 
     def crunch(self, fishes):
         for fish in fishes:
@@ -74,12 +76,12 @@ class Fish:
         self.radius = radius
         self.speed = speed
         self.rect = pygame.Rect(self.x - self.radius, self.y - self.radius, 2 * self.radius, 2 * self.radius)
-        self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])  # Random initial direction
+        self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1), (0.5,0.5), (-0.5,0.5), (-0.5,-0.5), (0.5,-0.5)])  # Random initial direction
+        self.dx, self.dy = self.direction
     
     def move(self):
-        dx, dy = self.direction
-        self.x += dx * self.speed
-        self.y += dy * self.speed
+        self.x += self.dx * self.speed
+        self.y += self.dy * self.speed
         self.rect.x = self.x - self.radius
         self.rect.y = self.y - self.radius
         
@@ -89,7 +91,6 @@ class Fish:
 
     def draw(self):
         pygame.draw.circle(window, WHITE, (self.x, self.y), self.radius)
-
 
 #===========================================================================================================================
 #game functions
@@ -177,7 +178,8 @@ while running:
     for fish in fishes:
         fish.move()
         if not pond.is_inside(fish.x, fish.y):  #turn that puppy around
-            fish.direction = (round(700-fish.x)/700), round((400-fish.y)/400)
+            fish.dx = -fish.dx
+            fish.dy = -fish.dy
         fish.draw()
     
     # Update the  display
