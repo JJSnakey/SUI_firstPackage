@@ -117,9 +117,9 @@ class Fish:
 #===========================================================================================================================
 #game functions
 
-def display_score(score, posX, posY):
+def display_score(score, posX, posY, playerNo):
     font = pygame.font.Font(None, 36)  # Choose a font and font size
-    text = font.render("Score: " + str(score), True, BLACK)  # Render the score text
+    text = font.render(f"Player {playerNo}: " + str(score), True, BLACK)  # Render the score text
     window.blit(text, (posX, posY))  # Blit the text onto the game window at posX,posY
 
 #determine if fish spawned in the pond      //used for spawn
@@ -181,7 +181,7 @@ pond = Pond(700, 400)       #hardcoded wtih radius 350, at location 700,400 (the
 
 # Create fishes
 fishes = []
-for i in range(1):
+for i in range(25):
     x = random.randint(400, 1200)
     y = random.randint(100, 700)
     while not is_inside_pond(x, y, pond):
@@ -230,8 +230,8 @@ while running:
 
     # Drawing------
     window.blit(background_image, (0, 0))
-    display_score(player1.score, 10, 10)
-    display_score(player2.score, 10, 40)
+    display_score(player1.score, 10, 10, 1)
+    display_score(player2.score, 10, 40, 2)
 
     player1.draw()
     player2.draw()
