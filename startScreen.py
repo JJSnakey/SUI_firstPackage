@@ -2,8 +2,7 @@ import pygame
 import sys
 import pygame.locals as pl
 import subprocess
-#import testies
-#import HungryHungry
+import testies
 
 # Initialize Pygame
 pygame.init()

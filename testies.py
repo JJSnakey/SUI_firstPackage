@@ -46,6 +46,4 @@ def startgame():
 def finishGame(winner):
     foo(client, winner)
 
-
 startgame()
-finishGame("0")

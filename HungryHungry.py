@@ -2,6 +2,12 @@ import pygame
 import sys
 import random
 import math
+from testies import client
+from testies import foo
+
+walletId1 = "0x13aeee222ee6e7b1f488d2dfe3d71e5274b2e962e8edd116414a7c71b6a0fea0"
+walletId2 = "0x324f4a8fdeab91f58ce68cbff631b86ba53bf4d4abe0748b757a96004f7ec931"
+
 
 #===========================================================================================================================
 #Pre game
@@ -151,6 +157,11 @@ def display_winner(player1_score, player2_score):
     text = font.render(f"20 SUI has been added to {winner}'s wallet", True, BLACK)  # Render the winner text
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
     window.blit(text, text_rect)
+
+    if(winner == "Player 1"):
+        foo(client, walletId1)
+    if(winner == "Player 2"):
+        foo(client, walletId2)
 
     pygame.display.flip()
     pygame.time.delay(10000)  # Display winner for 30 seconds before quitting
