@@ -17,7 +17,7 @@ pygame.display.set_caption("SUI Hungry Hungry Alligators")
 
 # Load the images
 background_image = pygame.image.load("landscape.png").convert()
-player_image = pygame.image.load("arrow.png").convert_alpha()
+player_image = pygame.image.load("crocodile.png").convert_alpha()
 fish_image = pygame.image.load("fish.png").convert_alpha()
 
 # Set up colors
@@ -37,7 +37,7 @@ class Player:
         self.speed = speed
         self.score = score
         self.angle = angle
-        self.original_image = pygame.transform.scale(player_image, (size+10, size+10))  # Scale the image to match the player size
+        self.original_image = pygame.transform.scale(player_image, (size+50, size+50))  # Scale the image to match the player size
         self.image = self.original_image
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
     
