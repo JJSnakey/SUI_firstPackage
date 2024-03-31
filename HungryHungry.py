@@ -147,8 +147,13 @@ def display_winner(player1_score, player2_score):
     text = font.render(f"{winner} wins!", True, BLACK)  # Render the winner text
     text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
     window.blit(text, text_rect)
+
+    text = font.render(f"20 SUI has been added to {winner}'s wallet", True, BLACK)  # Render the winner text
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
+    window.blit(text, text_rect)
+
     pygame.display.flip()
-    pygame.time.delay(30000)  # Display winner for 30 seconds before quitting
+    pygame.time.delay(10000)  # Display winner for 30 seconds before quitting
 
 #===========================================================================================================================
 #initialization
