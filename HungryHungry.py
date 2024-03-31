@@ -18,6 +18,7 @@ pygame.display.set_caption("SUI Hungry Hungry Alligators")
 # Load the images
 background_image = pygame.image.load("landscape.png").convert()
 player_image = pygame.image.load("arrow.png").convert_alpha()
+fish_image = pygame.image.load("fish.png").convert_alpha()
 
 # Set up colors
 WHITE =  (255,255,255)
@@ -60,7 +61,7 @@ class Pond:
         self.y = y
         self.radius = radius
         self.rect = pygame.Rect(self.x - self.radius, self.y - self.radius, 2 * self.radius, 2 * self.radius)
-
+        
     def is_inside(self, x, y):
         distance = math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
         return distance <= self.radius
@@ -78,6 +79,14 @@ class Fish:
         self.rect = pygame.Rect(self.x - self.radius, self.y - self.radius, 2 * self.radius, 2 * self.radius)
         self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1), (0.5,0.5), (-0.5,0.5), (-0.5,-0.5), (0.5,-0.5)])  # Random initial direction
         self.dx, self.dy = self.direction
+        self.original_image = pygame.transform.scale(fish_image, (self.radius+10, self.radius+10))  # Scale the image to match the player size
+        self.image = self.original_image
+        self.angle = 0
+
+    def rotate(self):
+        # Calculate the angle of rotation based on the direction
+        self.angle = -math.degrees(math.atan2(self.dy, self.dx)+2.19)
+        self.image = pygame.transform.rotate(self.original_image, int(self.angle))
     
     def move(self):
         self.x += self.dx * self.speed
@@ -90,7 +99,9 @@ class Fish:
             self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
 
     def draw(self):
-        pygame.draw.circle(window, WHITE, (self.x, self.y), self.radius)
+        self.rotate()
+        window.blit(self.image, self.rect)
+        #pygame.draw.circle(window, WHITE, (self.x, self.y), self.radius)
 
 #===========================================================================================================================
 #game functions
@@ -108,7 +119,7 @@ def is_inside_pond(x, y, pond):
     return False
 
 #determine if colliding
-def is_collision(obj1, obj2):               #obj1 typically fish, obj2 typicall player
+def is_collision(obj1, obj2):               #obj1 fish, obj2 player
      # Calculate the center coordinates of obj1
     obj1_center_x = obj1.x + obj1.radius
     obj1_center_y = obj1.y + obj1.radius
