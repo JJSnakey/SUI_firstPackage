@@ -1,19 +1,23 @@
+from create_player import create_players
+from pay_winner import foo
+from create_player import balance
 import time
 
+ # For synchronous RPC API interactions
 from pysui import SyncClient
-from create_player import create_players, balance
-from pay_winner import foo
+ # Synchronous client
+#client = SyncClient(SuiConfig.default_config())
 
-def start_game():
-    """
-    Starts the game and checks conditions every 5 seconds for 1 minute.
 
-    Returns:
-        bool: True if conditions are met, False otherwise.
-    """
-    # Initialize client
+client = create_players()
+
+
+def startgame():
+    global client
     client = create_players()
-    
+
+    status = False
+
     # Define the total duration in seconds
     total_duration = 60  # 1 minute
 
@@ -25,31 +29,20 @@ def start_game():
 
     # Loop until the total duration is reached
     while time.time() - start_time < total_duration:
-        # Check condition
-        if balance(client):
-            return True
+        # Your condition check goes here
+        # For example, let's print "Condition met!" every 5 seconds
+        if balance(client) == True:
+            status = True
+            break
         print("Checking condition...")
         
         # Pause execution for the specified interval
         time.sleep(interval)
 
     print("Finished checking conditions for 1 minute.")
-    return False
+    return status
 
-def finish_game(winner):
-    """
-    Finishes the game by executing actions for the winner.
-
-    Args:
-        winner (str): The winner's name or identifier.
-
-    Returns:
-        None
-    """
-    # Initialize client
-    client = create_players()
-    
-    # Perform actions for the winner
+def finishGame(winner):
     foo(client, winner)
 
-start_game()
+startgame()
