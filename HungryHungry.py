@@ -30,23 +30,34 @@ BLUE = (0,0,255)
 
 # Set up the player (square)
 class Player:
-    def __init__(self, x, y, size=50, speed=5, score=0):
+    def __init__(self, x, y, angle, size=50, speed=5, score=0):
         self.x = x
         self.y = y
         self.size = size
         self.speed = speed
         self.score = score
-        self.image = pygame.transform.scale(player_image, (size, size))  # Scale the image to match the player size
+        self.angle = angle
+        self.original_image = pygame.transform.scale(player_image, (size+10, size+10))  # Scale the image to match the player size
+        self.image = self.original_image
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
     
-    def move(self, dx, dy):
-        self.x += dx * self.speed
-        self.y += dy * self.speed
-        self.rect.x = self.x
-        self.rect.y = self.y
+    def turn_left(self):
+        self.angle += 3  # Adjust the turning angle
+
+    def turn_right(self):
+        self.angle -= 3  # Adjust the turning angle      
+
+    def move_forward(self):
+        dx = self.speed * math.cos(math.radians(self.angle))
+        dy = -self.speed * math.sin(math.radians(self.angle))
+        self.x += dx
+        self.y += dy
+        self.rect.center = (self.x, self.y)
     
     def draw(self):
-        window.blit(self.image, self.rect)
+        rotated_image = pygame.transform.rotate(self.original_image, self.angle)
+        new_rect = rotated_image.get_rect(center=self.rect.center)
+        window.blit(rotated_image, new_rect)
 
     def crunch(fishes, self):
         for fish in fishes:
@@ -71,7 +82,7 @@ class Pond:
 
 #object to be eaten (eating a fish counts score, zero fish left ends the game)
 class Fish:
-    def __init__(self, x, y, radius=20, speed=2):
+    def __init__(self, x, y, radius=30, speed=2):
         self.x = x
         self.y = y
         self.radius = radius
@@ -79,7 +90,7 @@ class Fish:
         self.rect = pygame.Rect(self.x - self.radius, self.y - self.radius, 2 * self.radius, 2 * self.radius)
         self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1), (0.5,0.5), (-0.5,0.5), (-0.5,-0.5), (0.5,-0.5)])  # Random initial direction
         self.dx, self.dy = self.direction
-        self.original_image = pygame.transform.scale(fish_image, (self.radius+10, self.radius+10))  # Scale the image to match the player size
+        self.original_image = pygame.transform.scale(fish_image, (30,30))  # Scale the image to match the player size
         self.image = self.original_image
         self.angle = 0
 
@@ -108,7 +119,7 @@ class Fish:
 
 def display_score(score, posX, posY):
     font = pygame.font.Font(None, 36)  # Choose a font and font size
-    text = font.render("Score: " + str(score), True, WHITE)  # Render the score text
+    text = font.render("Score: " + str(score), True, BLACK)  # Render the score text
     window.blit(text, (posX, posY))  # Blit the text onto the game window at posX,posY
 
 #determine if fish spawned in the pond      //used for spawn
@@ -140,8 +151,11 @@ def is_collision(obj1, obj2):               #obj1 fish, obj2 player
 #initialization
 
 # Create players
-player = Player(WIDTH // 2 - 125, HEIGHT // 2 - 25)
-player2 = Player(WIDTH // 2 + 75, HEIGHT // 2 - 25)
+players = []
+player1 = Player(WIDTH // 2 - 225, HEIGHT // 2 - 25, 0)     #posX,posY,angle
+players.append(player1)
+player2 = Player(WIDTH // 2 + 175, HEIGHT // 2 - 25, 180)
+players.append(player2)
 
 #Create play zone (pond)
 pond = Pond(700, 400)       #hardcoded wtih radius 350, at location 700,400 (the center)
@@ -149,7 +163,7 @@ pond = Pond(700, 400)       #hardcoded wtih radius 350, at location 700,400 (the
 # Create fishes
 fishes = []
 for i in range(50):
-    x = random.randint(400, 800)
+    x = random.randint(400, 1200)
     y = random.randint(100, 700)
     while not is_inside_pond(x, y, pond):
         x = random.randint(400, 800)
@@ -170,37 +184,37 @@ while running:
     
     # Handle key presses
     keys = pygame.key.get_pressed()
-    #player
+    #player1
     if keys[pygame.K_a]:
-        player.move(-1, 0)
+        player1.turn_left()
     if keys[pygame.K_d]:
-        player.move(1, 0)
+        player1.turn_right()
     if keys[pygame.K_w]:
-        player.move(0, -1)
-    if keys[pygame.K_s]:
-        player.move(0, 1)
-    if keys[pygame.K_SPACE]:
-        player.crunch(fishes)   #passes 2 arguments, player and fishes
+        player1.move_forward()
+
 
     #player2
-    if keys[pygame.K_LEFT]:
-        player2.move(-1, 0)
-    if keys[pygame.K_RIGHT]:
-        player2.move(1, 0)
-    if keys[pygame.K_UP]:
-        player2.move(0, -1)
-    if keys[pygame.K_DOWN]:
-        player2.move(0, 1)
-    if keys[pygame.K_PERIOD]:
-        player2.crunch(fishes)   #passes 2 arguments, player2 and fishes
-    
+    if keys[pygame.K_j]:
+        player2.turn_left()
+    if keys[pygame.K_l]:
+        player2.turn_right()
+    if keys[pygame.K_i]:
+        player2.move_forward()
+
+    for fish in fishes:
+            if is_collision(fish, player1):
+                fishes.remove(fish)
+                player1.score += 1
+            elif is_collision(fish, player2):
+                fishes.remove(fish)
+                player2.score += 1
+
     # Drawing------
     window.blit(background_image, (0, 0))
-    display_score(player.score, 10, 10)
+    display_score(player1.score, 10, 10)
     display_score(player2.score, 10, 40)
 
-    pond.draw()  #draw the pond (remove later)
-    player.draw()
+    player1.draw()
     player2.draw()
     for fish in fishes:
         fish.move()
