@@ -2,7 +2,7 @@ import pygame
 import sys
 import pygame.locals as pl
 import subprocess
-import testies
+#import testies
 #import HungryHungry
 
 # Initialize Pygame
@@ -113,7 +113,7 @@ class Button:
                 start_game()
 
 def start_game():
-    testies.startgame()
+    #testies.startgame()
     subprocess.Popen(["python", "HungryHungry.py"])
     
 
