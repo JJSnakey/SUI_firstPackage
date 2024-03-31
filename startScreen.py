@@ -107,9 +107,9 @@ class Button:
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # Left mouse button
-                if self.rect.collidepoint(event.pos):
-                    if self.action:
-                        start_game()
+            #     if self.rect.collidepoint(event.pos):
+            #         if self.action:
+                start_game()
 
 def start_game():
     subprocess.Popen(["python", "HungryHungry.py"])
@@ -121,7 +121,8 @@ textbox2 = TextBox(300, 400, 500, 50)
 
 text_boxes = [textbox1, textbox2]
 
-start_button = Button(SCREEN_WIDTH//2 - 100, 600, 200, 50, "Start Game", BLACK, WHITE)
+start_button = Button(SCREEN_WIDTH//2 - 150, 600, 300, 50, "GAMBLE 10 SUI", BLACK, WHITE, start_game)
+buttons = [start_button]
 
 # Main loop===============================================================================================================================================
 
@@ -132,6 +133,8 @@ while True:
             sys.exit()
         for textbox in text_boxes:
             textbox.handle_event(event)
+        for button in buttons:
+            button.handle_event(event)
 
 
     # Draw textboxes and button
