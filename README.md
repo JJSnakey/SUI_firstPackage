@@ -17,11 +17,17 @@ Player characters are alligators and the goal of the game is to eat more fish th
 In its prototype, this game is a local head-to-head player. 2 Players are currently supported with plans to support 4 players online in the future.
 
 Player 1 (left alligator):
+
 a - Turn Left
+
 d - Turn Right
+
 w - Move Forward
 
 Player 2 (right alligator):
+
 j - Turn Left
+
 l - Turn Right
+
 i - Move Forward
