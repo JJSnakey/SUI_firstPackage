@@ -18,7 +18,7 @@ def create_players():
         #   where
         #   wallet_key value is 66 char hex string
         #   key_scheme can be ED25519, SECP256K1 or SECP256R1
-        prv_keys=["AD2yYDGaC+w6x46pX/c42QQXCAd8gdGf+tjaY3ZV9pWQ", {'wallet_key': '0x3db260319a0bec3ac78ea95ff738d9041708077c81d19ffad8da637655f69590', 
+        prv_keys=["ADJPSo/eq5H1jOaMv/YxuGulO/TUq+B0i3V6lgBPfskx", {'wallet_key': '0x324f4a8fdeab91f58ce68cbff631b86ba53bf4d4abe0748b757a96004f7ec931', 
                                                                    'key_scheme': SignatureScheme.ED25519}],
 
         # Optional, only needed for subscribing
@@ -31,14 +31,17 @@ def create_players():
     coin_object_ids = objectID(client)
     global coin_object_id
     coin_object_id = coin_object_ids
-    combine(coin_object_ids)
+
+
+
+    #combine(coin_object_ids)
 
 
     return client
 
 def objectID(client):
 
-    tx_result_json = client.get_gas(fetch_all = True, address='0x3db260319a0bec3ac78ea95ff738d9041708077c81d19ffad8da637655f69590')
+    tx_result_json = client.get_gas(fetch_all = True, address='0x324f4a8fdeab91f58ce68cbff631b86ba53bf4d4abe0748b757a96004f7ec931')
     tx_result_json = tx_result_json._data
     tx_result_json = tx_result_json.to_json()
 
@@ -54,7 +57,7 @@ number = 0
 
 def balance(client):
 
-    tx_result_json = client.get_gas(fetch_all = True, address='0x3db260319a0bec3ac78ea95ff738d9041708077c81d19ffad8da637655f69590')
+    tx_result_json = client.get_gas(fetch_all = True, address='0x324f4a8fdeab91f58ce68cbff631b86ba53bf4d4abe0748b757a96004f7ec931')
     tx_result_json = tx_result_json._data
     tx_result_json = tx_result_json.to_json()
 
@@ -62,6 +65,7 @@ def balance(client):
     tx_result_dict = tx_result_dict.get("data", {})
 
     coin_object_ids = [entry['balance'] for entry in tx_result_dict]
+
 
     total = 0
     integer_array = [int(x) for x in coin_object_ids]
@@ -72,8 +76,10 @@ def balance(client):
     total = total/1000000000
     print(coin_object_ids)
     print(total)
+    print(len(coin_object_ids))
 
-    if total >= 29:
+    if int(total) >= 19 and len(coin_object_ids) >= 2:
+        print("Got It")
         return True
     else:
         return False
@@ -84,16 +90,16 @@ def combine(coin_object_ids):
     primary_coin = coin_object_ids[0]
 
     # Construct the shell command to merge all other coin object IDs into the first one
-    
+
 
     # Add all other coin object IDs as coins to merge
-    if len(coin_object_ids) > 1:
-        for coin_id in coin_object_ids[1:]:
+    if len(coin_object_ids) > 0:
+            coin_id = coin_object_ids[1]
             command = f"sui client merge-coin --primary-coin {primary_coin}"
             command += f" --coin-to-merge {coin_id}"
-            command += " --gas-budget 10000000"
+            command += " --gas-budget 1000000"
         
-        subprocess.run(command, shell=True)
+    subprocess.run(command, shell=True)
 
     # Add the gas budget
     

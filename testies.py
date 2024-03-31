@@ -40,7 +40,6 @@ def startgame():
         time.sleep(interval)
 
     print("Finished checking conditions for 1 minute.")
-    client = create_players()
     return status
 
 def finishGame(winner):
