@@ -59,12 +59,6 @@ class Player:
         new_rect = rotated_image.get_rect(center=self.rect.center)
         window.blit(rotated_image, new_rect)
 
-    def crunch(fishes, self):
-        for fish in fishes:
-            if is_collision(fish, self):
-                fishes.remove(fish)
-                self.score += 1
-
 #area for fishes to spawn
 class Pond:
     def __init__(self, x, y, radius = 350):
@@ -147,6 +141,15 @@ def is_collision(obj1, obj2):               #obj1 fish, obj2 player
         return True
     return False
 
+def display_winner(player1_score, player2_score):
+    winner = "Player 1" if player1_score > player2_score else "Player 2" if player2_score > player1_score else "It's a tie!"
+    font = pygame.font.Font(None, 72)  # Choose a font and font size
+    text = font.render(f"{winner} wins!", True, BLACK)  # Render the winner text
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    window.blit(text, text_rect)
+    pygame.display.flip()
+    pygame.time.delay(30000)  # Display winner for 30 seconds before quitting
+
 #===========================================================================================================================
 #initialization
 
@@ -162,7 +165,7 @@ pond = Pond(700, 400)       #hardcoded wtih radius 350, at location 700,400 (the
 
 # Create fishes
 fishes = []
-for i in range(50):
+for i in range(1):
     x = random.randint(400, 1200)
     y = random.randint(100, 700)
     while not is_inside_pond(x, y, pond):
@@ -176,6 +179,7 @@ for i in range(50):
 
 # Main game loop
 running = True
+#gameBegin = False
 while running:
     # Event handling
     for event in pygame.event.get():
@@ -191,7 +195,6 @@ while running:
         player1.turn_right()
     if keys[pygame.K_w]:
         player1.move_forward()
-
 
     #player2
     if keys[pygame.K_j]:
@@ -234,7 +237,8 @@ while running:
 
     # Check if all fishes are eaten
     if len(fishes) == 0:
-        running = False  # End the game if no more fishes left
+        display_winner(player1.score, player2.score)
+        running = False
 
 #===========================================================================================================================
 
